@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- 
 NOTE: This sample requires a bot which can send and receive specific event messages. Follow the instructions on 
 https://github.com/ryanvolum/backChannelBot to deploy such a bot. 
@@ -81,7 +81,7 @@ For ease of testing, several parameters can be set in the query string:
             	.filter(function(activity){return activity.type === "event" && activity.name === "changeBackground"})
                 .subscribe(function(activity) {return changeBackgroundColor(activity.value)})
 
-            const changeBackgroundColor = function (newColor) {
+            function changeBackgroundColor (newColor) {
                 return document.body.style.backgroundColor = newColor;
             }
 
