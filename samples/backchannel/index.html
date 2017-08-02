@@ -75,18 +75,20 @@ For ease of testing, several parameters can be set in the query string:
                 bot: bot
             }, document.getElementById("BotChatGoesHere"));
 
+			// IE11はarrow演算子をサポートしていないので匿名関数で書く
+			// https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions
             botConnection.activity$
-                .filter(activity => activity.type === "event" && activity.name === "changeBackground")
-                .subscribe(activity => changeBackgroundColor(activity.value))
+            	.filter(function(activity){return activity.type === "event" && activity.name === "changeBackground"})
+                .subscribe(function(activity) {return changeBackgroundColor(activity.value)})
 
-            const changeBackgroundColor = (newColor) => {
-                document.body.style.backgroundColor = newColor;
+            const changeBackgroundColor = function (newColor) {
+                return document.body.style.backgroundColor = newColor;
             }
 
-            const postButtonMessage = () => {
-                botConnection
+            const postButtonMessage = function(){
+                return botConnection
                     .postActivity({type: "event", value: "", from: {id: "me" }, name: "buttonClicked"})
-                    .subscribe(id => console.log("success"));
+                    .subscribe(function(id){ console.log("success")});
             }
 
         </script>
