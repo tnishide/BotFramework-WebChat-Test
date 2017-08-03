@@ -6,11 +6,7 @@ import bodyParser = require('body-parser');
 import * as path from 'path';
 import * as fs from 'fs';
 
-export var MockBot: dl.User = {
-    id: "mockbot",
-    name: "MockBot"
-}
-
+const config = require('../mock_dl/server_config.json') as { bot: dl.User, port: number, widthTests: { [id: string]: number } };
 const app = express();
 
 app.use(bodyParser.json()); // for parsing application/json
@@ -106,7 +102,7 @@ const startConversation = (req: express.Request, res: express.Response) => {
         type: "message",
         text: "Welcome to MockBot!",
         timestamp: new Date().toUTCString(),
-        from: MockBot
+        from: config.bot
     });
 }
 
@@ -152,10 +148,6 @@ const printCommands = () => {
 
 // Getting testing commands from map and server config
 const commands = require('../commands_map');
-const config = require('../mock_dl_server_config');
-let current_uitests = 0;
-let uitests_files = Object.keys(config["width-tests"]).length;
-
 
 const processCommand = (req: express.Request, res: express.Response, cmd: string, id: number) => {
 
@@ -180,27 +172,12 @@ const processCommand = (req: express.Request, res: express.Response, cmd: string
                     timestamp: new Date().toUTCString(),
                     channelId: "webchat",
                     text: printCommands(),
-                    from: MockBot
+                    from: config.bot
                 });
                 return;
             case 'end':
-                current_uitests++; // For each end command, we will excute twice
-                if (uitests_files * 2 <= current_uitests) {
-                    setTimeout(
-                        () => {
-                            process.exitCode = 0;
-                            process.exit();
-                        }, 3000);
-                }
-                else {
-                    sendActivity(res, {
-                        type: "message",
-                        timestamp: new Date().toUTCString(),
-                        channelId: "webchat",
-                        text: "echo: " + req.body.text,
-                        from: MockBot
-                    });
-                }
+                process.exitCode = 0;
+                process.exit();
                 return;
             default:
                 sendActivity(res, {
@@ -208,7 +185,7 @@ const processCommand = (req: express.Request, res: express.Response, cmd: string
                     timestamp: new Date().toUTCString(),
                     channelId: "webchat",
                     text: "echo: " + req.body.text,
-                    from: MockBot
+                    from: config.bot
                 });
                 return;
         }
@@ -318,7 +295,12 @@ app.get('/assets/:file', function (req, res) {
     const file = req.params["file"];
     res.sendFile(path.join(__dirname + "/../assets/" + file));
 });
-// Running Web Server and DirectLine Client on port
-app.listen(process.env.port || process.env.PORT || config["port"], () => {
-    console.log('listening on ' + config["port"]);
-});
+
+//do not listen unless being called from the command line
+if (!module.parent) {
+
+    // Running Web Server and DirectLine Client on port
+    app.listen(process.env.port || process.env.PORT || config.port, () => {
+        console.log('listening on ' + config.port);
+    });
+}
