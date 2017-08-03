@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as CardBuilder from './CardBuilder';
-import { Attachment, CardAction } from 'botframework-directlinejs';
+import { Attachment, CardAction, KnownMedia } from 'botframework-directlinejs';
 import { renderIfNonempty, konsole, IDoCardAction } from './Chat';
 import { FormatState } from './Store';
 import { AdaptiveCardContainer } from './AdaptiveCardContainer';
@@ -144,7 +144,7 @@ export const AttachmentView = (props: {
     onImageLoad: () => void
 }) => {
     if (!props.attachment) return;
-    const attachment = props.attachment;
+    const attachment = props.attachment as KnownMedia;
     const onCardAction = (cardAction: CardAction) => cardAction &&
         ((e: React.MouseEvent<HTMLElement>) => {
             props.onCardAction(cardAction.type, cardAction.value);
